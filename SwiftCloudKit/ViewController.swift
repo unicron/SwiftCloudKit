@@ -11,8 +11,12 @@ import CloudKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    //MARK: members
     @IBOutlet var tableView: UITableView!
+    var items = [CKRecord]()
     
+    
+    //MARK: view
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -23,6 +27,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
     //MARK: tableView stuff
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.items.count;
@@ -31,7 +41,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell") as UITableViewCell
         
-        cell.textLabel.text = self.items[indexPath.row]
+        cell.textLabel.text = self.items[indexPath.row].objectForKey("StringAttr") as? String
         
         return cell
     }
@@ -45,7 +55,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         publicDb.saveRecord(recordToSave, completionHandler: { savedRecord, saveError -> Void in
             if (saveError != nil) {
-                println("Error")
+                println("Error during save!")
                 
             } else {
                 println("Success!")
@@ -54,25 +64,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func doCloudKitFetch() {
-        let ckRecordId = CKRecordID(recordName: "TestRecord")
+        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
         let publicDb = CKContainer.defaultContainer().publicCloudDatabase
         
         publicDb.fetchRecordWithID(ckRecordId, completionHandler: { fetchedRecord, saveError -> Void in
             if (saveError != nil) {
-                println("Error")
-                
+                println("Error during fetch!")
+            
             } else {
                 println("Success!")
-                fetchedRecord.setObject(2, forKey:"TestIntAttribute")
-                fetchedRecord.setObject("Test", forKey:"TestStringAttribute")
+                //fetchedRecord.setObject(2, forKey:"TestIntAttribute")
+                var strAttr = fetchedRecord.objectForKey("TestStringAttribute") as? String
+                fetchedRecord.setObject(strAttr! + "Test", forKey:"TestStringAttribute")
+               
                 self.doCloudKitSave(fetchedRecord);
             }
         });
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    
 }
 
