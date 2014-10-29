@@ -41,7 +41,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell") as UITableViewCell
         
-        cell.textLabel.text = self.items[indexPath.row].objectForKey("StringAttr") as? String
+        cell.textLabel.text = self.items[indexPath.row].objectForKey("TestStringAttribute") as? String
         
         return cell
     }
@@ -54,7 +54,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let publicDb = CKContainer.defaultContainer().publicCloudDatabase
         
         publicDb.saveRecord(recordToSave, completionHandler: {(savedRecord:CKRecord!, saveError:NSError!) -> Void in
-            if (saveError != nil) {
+            if saveError != nil {
                 println("Error during save!")
                 
             } else {
@@ -64,11 +64,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func doCloudKitFetch() {
-//        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
         let publicDb = CKContainer.defaultContainer().publicCloudDatabase
-//        
+        
+//        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
 //        publicDb.fetchRecordWithID(ckRecordId, completionHandler: {(fetchedRecord:CKRecord!, saveError:NSError!) -> Void in
-//            if (saveError != nil) {
+//            if saveError != nil {
 //                println("Error during fetch!")
 //            
 //            } else {
@@ -81,10 +81,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //            }
 //        });
         
-        var predicate = NSPredicate(format: "TestStringAttribute = %@", "Blah")
+        //var predicate = NSPredicate(format: "TestStringAttribute = %@", "Blah")
+        let predicate = NSPredicate(value: true)  //get all records
         var query = CKQuery(recordType: "TestRecordType", predicate: predicate)
         publicDb.performQuery(query, inZoneWithID: nil, completionHandler: {(records:[AnyObject]!, fetchError:NSError!) -> Void in
-            if (fetchError != nil) {
+            if fetchError != nil {
                 println("Error during fetch!")
                 
             } else {
@@ -92,7 +93,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 for record in records {
                     let r = record as CKRecord
                     println(r.objectForKey("TestStringAttribute"))
+                    self.items.append(r)
                 }
+                self.tableView.reloadData()
             }
         });
         
