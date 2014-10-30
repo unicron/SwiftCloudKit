@@ -14,6 +14,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //MARK: members
     @IBOutlet var tableView: UITableView!
     var items = [CKRecord]()
+    //var items = ["test1", "test2"]
     
     
     //MARK: view
@@ -21,7 +22,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        
+        //self.tableView.delegate = self
+        //self.tableView.dataSource = self
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
         self.doCloudKitFetch()
         
@@ -42,6 +44,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell") as UITableViewCell
         
         cell.textLabel.text = self.items[indexPath.row].objectForKey("TestStringAttribute") as? String
+        //cell.textLabel.text = self.items[indexPath.row]
         
         return cell
     }
