@@ -19,7 +19,6 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="FKf-v5-Ali">
                                 <rect key="frame" x="0.0" y="28" width="600" height="526"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="JnZ-a6-Qm0" style="IBUITableViewCellStyleDefault" id="pNM-rj-Pfj">
                                         <autoresizingMask key="autoresizingMask"/>
@@ -55,6 +54,9 @@
                                 <state key="normal" title="Save">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="saveButtonClicked:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Noh-ss-jd8"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -71,7 +73,9 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="saveButton" destination="hsQ-af-FxT" id="bb7-hq-a90"/>
                         <outlet property="tableView" destination="FKf-v5-Ali" id="VVo-CT-qfK"/>
+                        <outlet property="textbox" destination="D95-12-DAy" id="hRJ-Kx-45B"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
