@@ -36,13 +36,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     //MARK: save
     @IBAction func saveButtonClicked(sender: AnyObject) -> Void {
+        if textbox.text.isEmpty {
+            return
+        }
+        
         let newRecord = CKRecord(recordType: "TestRecordType")
         let newRecordValue = textbox.text
         newRecord.setObject(newRecordValue, forKey: "TestStringAttribute")
         
         doCloudKitSave(newRecord)
+        textbox.text = nil
     }
-    
     
     //MARK: tableView stuff
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -59,9 +63,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         println("You selected cell #\(indexPath.row)!")
+        
+        var cell = self.items[indexPath.row]
+        
+        //this will wait until complete
+        self.doCloudKitDelete(nil, deleteRecordIds: [cell.recordID])
+        
+        self.items.removeAtIndex(indexPath.row)
+        self.refreshTable()
     }
     
-    func doCloudKitSave(recordToSave: CKRecord) {
+    func refreshTable() -> Void {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.tableView.reloadData()
+        })
+    }
+    
+    func doCloudKitDelete(saveRecords: [CKRecord]!, deleteRecordIds: [CKRecordID]!) -> Void {
+        let publicDb = CKContainer.defaultContainer().publicCloudDatabase
+    
+        var mod = CKModifyRecordsOperation(recordsToSave: saveRecords, recordIDsToDelete: deleteRecordIds)
+        
+        //execute faster!
+        //mod.queuePriority = NSOperationQueuePriority.High
+        publicDb.addOperation(mod)
+
+        mod.waitUntilFinished()
+    }
+    
+    func doCloudKitSave(recordToSave: CKRecord) -> Void {
         let publicDb = CKContainer.defaultContainer().publicCloudDatabase
         
         publicDb.saveRecord(recordToSave, completionHandler: {(savedRecord:CKRecord!, saveError:NSError!) -> Void in
@@ -71,14 +101,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             } else {
                 println("Success!")
                 self.items.append(savedRecord)
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.tableView.reloadData()
-                })
+                self.refreshTable()
             }
         });
     }
     
-    func doCloudKitFetch() {
+    func doCloudKitFetch() -> Void {
         //        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
         //        publicDb.fetchRecordWithID(ckRecordId, completionHandler: {(fetchedRecord:CKRecord!, saveError:NSError!) -> Void in
         //            if saveError != nil {
@@ -99,6 +127,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //var predicate = NSPredicate(format: "TestStringAttribute = %@", "Blah")
         let predicate = NSPredicate(value: true)  //get all records
         let query = CKQuery(recordType: "TestRecordType", predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         publicDb.performQuery(query, inZoneWithID: nil, completionHandler: {(records:[AnyObject]!, fetchError:NSError!) -> Void in
             if fetchError != nil {
                 println("Error during fetch!")
@@ -108,11 +137,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 for record in records {
                     let r = record as CKRecord
                     println(r.objectForKey("TestStringAttribute"))
+                    println(r.objectForKey("creationDate"))
                     self.items.append(r)
                 }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.tableView.reloadData()
-                })
+                self.refreshTable()
             }
         });
         
