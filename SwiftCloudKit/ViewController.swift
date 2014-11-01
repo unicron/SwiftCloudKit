@@ -70,28 +70,31 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
             } else {
                 println("Success!")
-                self.tableView.reloadData()
+                self.items.append(savedRecord)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.tableView.reloadData()
+                })
             }
         });
     }
     
     func doCloudKitFetch() {
-        let publicDb = CKContainer.defaultContainer().publicCloudDatabase
+        //        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
+        //        publicDb.fetchRecordWithID(ckRecordId, completionHandler: {(fetchedRecord:CKRecord!, saveError:NSError!) -> Void in
+        //            if saveError != nil {
+        //                println("Error during fetch!")
+        //
+        //            } else {
+        //                println("Success!")
+        //                //fetchedRecord.setObject(2, forKey:"TestIntAttribute")
+        //                var strAttr = fetchedRecord.objectForKey("TestStringAttribute") as? String
+        //                fetchedRecord.setObject(strAttr! + "Test", forKey:"TestStringAttribute")
+        //
+        //                self.doCloudKitSave(fetchedRecord);
+        //            }
+        //        });
         
-//        let ckRecordId = CKRecordID(recordName: "9f9f6add-e742-4f49-84bc-6476061784f5")
-//        publicDb.fetchRecordWithID(ckRecordId, completionHandler: {(fetchedRecord:CKRecord!, saveError:NSError!) -> Void in
-//            if saveError != nil {
-//                println("Error during fetch!")
-//            
-//            } else {
-//                println("Success!")
-//                //fetchedRecord.setObject(2, forKey:"TestIntAttribute")
-//                var strAttr = fetchedRecord.objectForKey("TestStringAttribute") as? String
-//                fetchedRecord.setObject(strAttr! + "Test", forKey:"TestStringAttribute")
-//               
-//                self.doCloudKitSave(fetchedRecord);
-//            }
-//        });
+        let publicDb = CKContainer.defaultContainer().publicCloudDatabase
         
         //var predicate = NSPredicate(format: "TestStringAttribute = %@", "Blah")
         let predicate = NSPredicate(value: true)  //get all records
@@ -107,7 +110,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     println(r.objectForKey("TestStringAttribute"))
                     self.items.append(r)
                 }
-                self.tableView.reloadData()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.tableView.reloadData()
+                })
             }
         });
         
